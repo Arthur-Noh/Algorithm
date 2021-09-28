@@ -10,48 +10,55 @@
 
 import sys
 
-row, column = map(int, sys.stdin.readline().split())
-ground = [list(map(int, sys.stdin.readline().split())) for _ in range(row)]
+# 행과 열 입력
+r, c = map(int, sys.stdin.readline().split())
 
-if row % 2 == 1:
-    sys.stdout.write(('R' * (column - 1) + 'D' + 'L' * (column - 1) + 'D') * (row // 2) + 'R' * (column - 1))
-elif column % 2 == 1:
-    sys.stdout.write(('D' * (row - 1) + 'R' + 'U' * (row - 1) + 'R') * (column // 2) + 'D' * (row - 1))
-elif row % 2 == 0 and column % 2 == 0:
-    # 건너뛸 위치를 정한다.
-    low = 1000
-    position = [-1, -1]
+# 지도 입력
+m = [list(map(int, sys.stdin.readline().split())) for _ in range(r)]
 
-    for i in range(row):
-        if i % 2 == 0:
-            for j in range(1, c, 2):
-                if low > ground[i][j]:
-                    low = ground[i][j]
-                    position = [i, j]
+if r % 2 == 1: # 행의 갯수가 홀수일 때
+    sys.stdout.write(('R' * (c - 1) + 'D' + 'L' * (c - 1) + 'D') * (r // 2) + 'R' * (c - 1))
+elif c % 2 == 1: # 열의 갯수가 홀수일 때
+    sys.stdout.write(('D' * (r - 1) + 'R' + 'U' * (r - 1) + 'R') * (c // 2) + 'D' * (r - 1))
 
-        else:
-            for j in range(0, c, 2):
-                if low > ground[i][j]:
-                    low = ground[i][j]
-                    position = [i, j]
+elif r % 2 == 0 and c % 2 == 0: # 이 알고리즘에서는 아래로 찾는 형식으로 구현하였다.
+    lowest = 1001 # 최저값을 찾기 위해 초기화
+    lowPosition = [-1, -1] # 최저값의 위치
 
-    res = ('D' * (row - 1) + 'R' + 'U' * (row - 1) + 'R') * (position[1] // 2)
-    x = 2 * (position[1] // 2)
+    for i in range(r):
+        if i % 2 == 0: # 최저값의 위치가 짝수 행 일때
+            for j in range(1, c, 2): # 최저값이 홀수 열(체크 O)에 해당하는 값이면
+                if lowest > m[i][j]:
+                    lowest = m[i][j]
+                    lowPosition = [i, j]
+        else: # 최저값의 위치가 홀수 행 일때
+            for k in range(0, c, 2): # 최저값이 짝수 열(체크 O)에 해당하는 값이면
+                if lowest > m[i][k]:
+                    lowest = m[i][k]
+                    lowPosition = [i, k]
+
+    # 최저값이 존재하는 열 바로 직전까지 result에 DD..RUU..R 을 저장한다.
+    result = ('D' * (r - 1) + 'R' + 'U' * (r - 1) + 'R') * (lowPosition[1] // 2)
+
+    # x : 건너뛸 값의 열, 체크가 없는 값 
+    # y : 행
+    # xbound : 건너뛸 값, +1 을 하는 이유는 체크에 해당하는 값만 제외시킬 수 있기 때문이다.
+    x = 2 * (lowPosition[1] // 2)
     y = 0
-    xbound = 2 * (position[1] // 2) + 1
-
-    while x != xbound or y != (row - 1):
-        if x < xbound and [y, xbound] != position:
+    xbound = 2 * (lowPosition[1] // 2) + 1
+    
+    while x != xbound or y != r - 1:
+        if x < xbound and [y, xbound] != lowPosition:
             x += 1
-            res += 'R'
-        elif x == xbound and [y, xbound - 1] != position:
+            result += 'R'
+        elif x == xbound and [y, xbound - 1] != lowPosition:
             x -= 1
-            res += 'L'
+            result += 'L'
 
-        if y != row - 1:
+        if y != r - 1:
             y += 1
-            res += 'D'
+            result += 'D'
 
-    res += ('R' + 'U' * (row - 1) + 'R' + 'D' * (row -1)) * ((column - position[1] - 1) // 2)
+    result += ('R' + 'U' * (r - 1) + 'R' + 'D' * (r - 1)) * ((c - lowPosition[1] - 1) // 2)
 
-    print(res)
+    print(result)
