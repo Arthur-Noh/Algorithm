@@ -48,5 +48,5 @@ for i in range(n):
     A = []
     flag = dfs(arr[i], arr.copy(), A)
     if flag:
-        print(A)
+        print(*A)  # *을 붙이면 리스트 형식 [1, 2, 3 ...]이 아니라 1 2 3 이렇게 출력된다.
         break
