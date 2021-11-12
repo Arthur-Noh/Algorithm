@@ -33,7 +33,7 @@
 # dp[i][j] = dp[i][j - 1] + dp[i - 1][j] (i, j가 2 이상인 경우)를 도출 할 수 있다.
 
 import sys
-n, k = int(sys.stdin.readline().split())
+n, k = map(int, sys.stdin.readline().split())
 dp = [[0] * 201 for i in range(201)]
 
 for i in range(201):
@@ -45,5 +45,5 @@ for i in range(2, 201):
 
     for j in range(2, 201):
         dp[i][j] = (dp[i][j - 1] + dp[i - 1][j]) % 1000000000
-        
+
 print(dp[k][n])
